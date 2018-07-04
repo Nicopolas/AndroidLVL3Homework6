@@ -1,8 +1,5 @@
 package zakharov.nikolay.com.androidlvl3homework6;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -81,11 +78,18 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.list_fragment, container, false);
         mPresenter = new Presenter(this);
-        appComponent = MainApp.getComponent();
+        appComponent = buildComponent();
         appComponent.injectsToListFragment(this);
+        appComponent.injectsToPresenter(mPresenter);
         initGUI();
         SugarContext.init(getActivity());
         return v;
+    }
+
+    public AppComponent buildComponent(){
+        return DaggerAppComponent.builder()
+                .daggerNetModule(new DaggerNetModule(getActivity()))
+                .build();
     }
 
     @Override
@@ -405,11 +409,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
     }
 
     @Override
-    public Call<List<Model>> gelCall() {
-        return call;
-    }
-
-    @Override
     public void makeToast(String string) {
         Toast toast = Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT);
         toast.show();
@@ -418,16 +417,5 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
     @Override
     public List<Model> getModelList() {
         return modelList;
-    }
-
-    @Override
-    public boolean getNetworkInfo() {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkinfo = connectivityManager.getActiveNetworkInfo();
-        if (networkinfo != null && networkinfo.isConnected()) {
-            return true;
-        }
-        return false;
     }
 }

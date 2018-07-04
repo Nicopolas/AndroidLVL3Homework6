@@ -16,6 +16,4 @@ public interface ListView {
     void makeToast(String string);
     void initGUI();
     List<Model> getModelList();
-    boolean getNetworkInfo();
-    Call<List<Model>> gelCall();
 }

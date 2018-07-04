@@ -26,6 +26,8 @@ public class Presenter {
 
     @Inject
     Call<List<Model>> call;
+    @Inject
+    boolean networkInfo;
 
     ListView mListView;
     List<Model> modelList;
@@ -39,36 +41,7 @@ public class Presenter {
     }
 
     public void load() {
-        if (mListView.getNetworkInfo()) {
-            // запускаем
-            try {
-                mListView.setVisibilityProgressBar(true);
-                downloadOneUrl(mListView.gelCall());
-            } catch (IOException e) {
-                e.printStackTrace();
-                mListView.setTextIntoTextView(e.getMessage());
-            }
-        } else {
-            mListView.makeToast("Подключите интернет");
-        }
-    }
-
-  /*  public void load() {
-        Retrofit retrofit = null;
-        try {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.github.com/") // - обратить внимание на слэш в базовом адресе
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            restAPI = retrofit.create(Endpoints.class);
-        } catch (Exception io) {
-            io.printStackTrace();
-            mListView.setTextIntoTextView(io.getMessage());
-            return;
-        }
-        // подготовили вызов на сервер
-        Call<List<Model>> call = restAPI.loadUsers();
-        if (mListView.getNetworkInfo()) {
+        if (networkInfo) {
             // запускаем
             try {
                 mListView.setVisibilityProgressBar(true);
@@ -81,7 +54,6 @@ public class Presenter {
             mListView.makeToast("Подключите интернет");
         }
     }
-*/
 
 
     // -------------------------------------------------------------- Realm

@@ -1,6 +1,10 @@
 package zakharov.nikolay.com.androidlvl3homework6;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import java.util.List;
 
 import dagger.Module;
@@ -12,6 +16,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class DaggerNetModule {
+    private Context context;
+
+    public DaggerNetModule(Context context){
+        this.context = context;
+    }
+
     @Provides
     Retrofit getRetrofit(){
         return new Retrofit.Builder()
@@ -23,6 +33,21 @@ public class DaggerNetModule {
     Call<List<Model>> getCall(Retrofit retrofit){
         Endpoints restAPI = retrofit.create(Endpoints.class);
         return restAPI.loadUsers();
+    }
+    @Provides
+    public Context provideContext(){
+        return context;
+    }
+
+    @Provides
+    public boolean getNetworkInfo() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkinfo = connectivityManager.getActiveNetworkInfo();
+        if (networkinfo != null && networkinfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
 }
 
