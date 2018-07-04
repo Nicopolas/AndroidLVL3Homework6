@@ -86,7 +86,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
         return v;
     }
 
-    public AppComponent buildComponent(){
+    public AppComponent buildComponent() {
         return DaggerAppComponent.builder()
                 .daggerNetModule(new DaggerNetModule(getActivity()))
                 .build();
@@ -348,8 +348,12 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
             final Model model = models.get(holder.getAdapterPosition());
             setImage(holder.avatar, model.getAvatar());
             holder.usersName.setText(model.getLogin());
-            holder.avatar.setOnClickListener(view -> ((MainActivity) getActivity()).startFragment(new UserFragment()));
-            holder.usersName.setOnClickListener(view -> ((MainActivity) getActivity()).startFragment(new UserFragment()));
+            holder.avatar.setOnClickListener(view -> {
+                startUserFragment(model);
+            });
+            holder.usersName.setOnClickListener(view -> {
+                startUserFragment(model);
+            });
         }
 
 
@@ -360,6 +364,16 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
             }
             return 0;
         }
+    }
+
+    private void startUserFragment(Model model) {
+        ModelComponent modelComponent = DaggerModelComponent.builder()
+                .daggerModelModule(new DaggerModelModule(model))
+                .build();
+
+        UserFragment fragment = new UserFragment();
+        modelComponent.injectsUserFragment(fragment);
+        ((MainActivity) getActivity()).startFragment(fragment);
     }
 
     static class UserHolder extends RecyclerView.ViewHolder {

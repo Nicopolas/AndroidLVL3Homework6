@@ -17,6 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class DaggerNetModule {
     private Context context;
+    private Model model;
 
     public DaggerNetModule(Context context){
         this.context = context;
@@ -34,6 +35,7 @@ public class DaggerNetModule {
         Endpoints restAPI = retrofit.create(Endpoints.class);
         return restAPI.loadUsers();
     }
+
     @Provides
     public Context provideContext(){
         return context;

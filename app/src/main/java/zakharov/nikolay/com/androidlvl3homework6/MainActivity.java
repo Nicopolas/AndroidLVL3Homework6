@@ -8,11 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.orm.SugarContext;
 
-import java.util.ArrayList;
-import java.util.List;
 
-
-public class MainActivity extends AppCompatActivity implements MainView {
+public class MainActivity extends AppCompatActivity {
 
     public FragmentManager fm = getSupportFragmentManager();
 
