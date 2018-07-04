@@ -28,7 +28,7 @@ public class Presenter {
     Call<List<Model>> call;
 
     ListView mListView;
-    List<Model> modelList = new ArrayList<>();
+    List<Model> modelList;
     Endpoints restAPI;
     Realm realm;
 
@@ -44,7 +44,6 @@ public class Presenter {
             try {
                 mListView.setVisibilityProgressBar(true);
                 downloadOneUrl(mListView.gelCall());
-                mListView.setVisibilityUsersList(true);
             } catch (IOException e) {
                 e.printStackTrace();
                 mListView.setTextIntoTextView(e.getMessage());
@@ -180,6 +179,7 @@ public class Presenter {
                 }
                 mListView.setVisibilityProgressBar(false);
                 mListView.setVisibilityUsersList(true);
+                mListView.initGUI();
             }
 
             @Override

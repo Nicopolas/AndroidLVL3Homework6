@@ -67,6 +67,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
 
     Endpoints restAPI;
     List<Model> modelList = new ArrayList<>();
+    View v;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,12 +79,11 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.list_fragment, container, false);
+        v = inflater.inflate(R.layout.list_fragment, container, false);
         mPresenter = new Presenter(this);
         appComponent = MainApp.getComponent();
         appComponent.injectsToListFragment(this);
-        initGUI(v);
-        mPresenter.load();
+        initGUI();
         SugarContext.init(getActivity());
         return v;
     }
@@ -95,7 +95,8 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
         super.onStart();
     }
 
-    private void initGUI(View v) {
+    @Override
+    public void initGUI() {
         mInfoTextView = (TextView) v.findViewById(R.id.tvLoad);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         btnLoad = (Button) v.findViewById(R.id.btnLoad);
@@ -114,33 +115,11 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         usersList.setAdapter(adapter);
         usersList.setLayoutManager(linearLayoutManager);
-        usersList.setVisibility(View.GONE);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnLoad:
-                mInfoTextView.setText("");
-
-                ConnectivityManager connectivityManager =
-                        (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo networkinfo = connectivityManager.getActiveNetworkInfo();
-
-                if (networkinfo != null && networkinfo.isConnected()) {
-                    // запускаем
-                    try {
-                        progressBar.setVisibility(View.VISIBLE);
-                        downloadOneUrl(call);
-                        usersList.setVisibility(View.VISIBLE);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        mInfoTextView.setText(e.getMessage());
-                    }
-                } else {
-                    Toast.makeText(getActivity(), "Подключите интернет", Toast.LENGTH_SHORT).show();
-                }
-                break;
             case R.id.btnSaveAllSugar:
                 Single<Bundle> singleSaveAll = Single.create(new SingleOnSubscribe<Bundle>() {
 
@@ -344,39 +323,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
         };
     }
 
-    private void downloadOneUrl(Call<List<Model>> call) throws IOException {
-        call.enqueue(new Callback<List<Model>>() {
-
-            @Override
-            public void onResponse(Call<List<Model>> call, Response<List<Model>> response) {
-                if (response.isSuccessful()) {
-                    if (response != null) {
-                        Model curModel = null;
-                        mInfoTextView.setVisibility(View.VISIBLE);
-                        mInfoTextView.append("\n количество = " + response.body().size() +
-                                "\n-----------------");
-                        for (int i = 0; i < response.body().size(); i++) {
-                            curModel = response.body().get(i);
-                            modelList.add(curModel);
-                        }
-                    }
-                } else {
-                    System.out.println("onResponse error: " + response.code());
-                    mInfoTextView.setVisibility(View.GONE);
-                    mInfoTextView.setText("onResponse error: " + response.code());
-                }
-                progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onFailure(Call<List<Model>> call, Throwable t) {
-                System.out.println("onFailure " + t);
-                mInfoTextView.setVisibility(View.VISIBLE);
-                mInfoTextView.setText("onFailure " + t.getMessage());
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-    }
 
     class UserAdapter extends RecyclerView.Adapter<UserHolder> {
         List<Model> models;

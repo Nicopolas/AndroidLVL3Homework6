@@ -14,6 +14,7 @@ public interface ListView {
     void setVisibilityProgressBar(boolean visibility);
     void setVisibilityUsersList(boolean visibility);
     void makeToast(String string);
+    void initGUI();
     List<Model> getModelList();
     boolean getNetworkInfo();
     Call<List<Model>> gelCall();
