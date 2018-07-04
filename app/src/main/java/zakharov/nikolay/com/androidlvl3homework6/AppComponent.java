@@ -6,6 +6,6 @@ import dagger.Component;
 
 @Component(modules = {DaggerNetModule.class})
 public interface AppComponent {
-    void injectsToListFragent(ListFragment listFragment);
+    void injectsToListFragment(ListFragment listFragment);
 }
 

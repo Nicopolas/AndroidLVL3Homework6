@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
  */
 
 public class UserFragment extends Fragment implements OnBackPressedListener{
+    private final String TAG = getClass().getSimpleName();
 
     @Override
     public void onBackPressed() {

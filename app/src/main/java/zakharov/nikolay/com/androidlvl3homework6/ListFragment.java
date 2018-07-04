@@ -81,7 +81,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
         View v = inflater.inflate(R.layout.list_fragment, container, false);
         mPresenter = new Presenter(this);
         appComponent = MainApp.getComponent();
-        appComponent.injectsToListFragent(this);
+        appComponent.injectsToListFragment(this);
         initGUI(v);
         mPresenter.load();
         SugarContext.init(getActivity());
@@ -427,11 +427,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
         Glide.with(this)
                 .load(imageUrl)
                 .into(image);
-    }
-
-    @Override
-    public SQLiteHelper getSQLiteHelper() {
-        return new SQLiteHelper(getActivity());
     }
 
     @Override

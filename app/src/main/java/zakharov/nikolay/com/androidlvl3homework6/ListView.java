@@ -9,7 +9,6 @@ import retrofit2.Call;
  */
 
 public interface ListView {
-    SQLiteHelper getSQLiteHelper();
     void appendIntoTextView(String str);
     void setTextIntoTextView(String str);
     void setVisibilityProgressBar(boolean visibility);

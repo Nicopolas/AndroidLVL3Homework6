@@ -1,5 +1,7 @@
 package zakharov.nikolay.com.androidlvl3homework6;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +22,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class Presenter {
+    private final String TAG = getClass().getSimpleName();
+
     @Inject
     Call<List<Model>> call;
 
@@ -79,57 +83,6 @@ public class Presenter {
         }
     }
 */
-
-    // ------------------------------------ SQLite
-
-    public void saveAllSQLite() {
-        try {
-            Date first = new Date();
-            for (Model model : modelList) {
-                mListView.getSQLiteHelper().saveUserInDateBase(model);
-            }
-            Date second = new Date();
-            setStat(modelList.size(), first, second);
-        } catch (Exception e) {
-            e.printStackTrace();
-            mListView.setTextIntoTextView(e.getMessage());
-        }
-    }
-
-    public void selectAllSQLite() {
-        try {
-            Date first = new Date();
-            modelList = new ArrayList<>();
-            modelList.addAll(mListView.getSQLiteHelper().getAllUsersFromDataBase());
-            Date second = new Date();
-            setStat(modelList.size(), first, second);
-
-            mListView.appendIntoTextView("\n-----------------");
-            for (Model model : modelList) {
-                mListView.appendIntoTextView(
-                        "\nLogin = " + model.getLogin() +
-                                "\nId = " + model.getUserId() +
-                                "\nURI = " + model.getAvatar() +
-                                "\n-----------------");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            mListView.setTextIntoTextView(e.getMessage());
-        }
-    }
-
-    public void deleteAllSQLite() {
-        try {
-            Date first = new Date();
-            mListView.getSQLiteHelper().deleteAllUsersFromDataBase();
-            selectAllSQLite();
-            Date second = new Date();
-            setStat(modelList.size(), first, second);
-        } catch (Exception e) {
-            e.printStackTrace();
-            mListView.setTextIntoTextView(e.getMessage());
-        }
-    }
 
 
     // -------------------------------------------------------------- Realm
@@ -211,6 +164,7 @@ public class Presenter {
             public void onResponse(Call<List<Model>> call, Response<List<Model>> response) {
                 if (response.isSuccessful()) {
                     if (response != null) {
+                        Log.e(TAG,  "response.body().size()" + response.body().size());
                         Model curModel = null;
                         mListView.appendIntoTextView("\nколичество = " + response.body().size() +
                                 "\n-----------------");
@@ -220,6 +174,7 @@ public class Presenter {
                         }
                     }
                 } else {
+                    Log.e(TAG,  "response == null");
                     System.out.println("onResponse error: " + response.code());
                     mListView.setTextIntoTextView("onResponse error: " + response.code());
                 }
