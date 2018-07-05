@@ -17,7 +17,6 @@ import retrofit2.Response;
 
 public class UserFragmentPresenter {
     private final String TAG = getClass().getSimpleName();
-    static UserFragmentPresenter mUserFragmentPresenter = null;
     UserView userView;
 
     public UserFragmentPresenter(UserView userView) {

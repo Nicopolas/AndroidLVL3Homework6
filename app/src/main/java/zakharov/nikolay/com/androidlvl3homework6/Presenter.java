@@ -52,6 +52,56 @@ public class Presenter {
         }
     }
 
+    // -------------------------------------------------------------- Sugar
+    public void saveAllSugar() {
+        try {
+            String curLogin = "";
+            String curUserID = "";
+            String curAvatarUrl = "";
+            Date first = new Date();
+            for (Model curItem : modelList) {
+                curLogin = curItem.getLogin();
+                curUserID = curItem.getUserId();
+                curAvatarUrl = curItem.getAvatar();
+                SugarModel sugarModel = new SugarModel(curLogin, curUserID, curAvatarUrl);
+                sugarModel.save();
+            }
+            Date second = new Date();
+            List<SugarModel> tempList = SugarModel.listAll(SugarModel.class);
+            setStat(tempList.size(), first, second);
+        } catch (Exception e) {
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
+        }
+    }
+
+    public void selectAllSugar() {
+        try {
+            Date first = new Date();
+            List<SugarModel> tempList = SugarModel.listAll(SugarModel.class);
+            Date second = new Date();
+            setStat(tempList.size(), first, second);
+        } catch (Exception e) {
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
+        }
+    }
+
+    public void deleteAllSugar() {
+        try {
+            Date first = new Date();
+            int count = SugarModel.deleteAll(SugarModel.class);
+            Date second = new Date();
+            setStat(count, first, second);
+        } catch (Exception e) {
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
+        }
+    }
+
 
     // -------------------------------------------------------------- Realm
 
@@ -85,8 +135,9 @@ public class Presenter {
             setStat((int) count, first, second);
             realm.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            mListView.setTextIntoTextView(e.getMessage());
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
         }
     }
 
@@ -99,8 +150,9 @@ public class Presenter {
             setStat(tempList.size(), first, second);
             realm.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            mListView.setTextIntoTextView(e.getMessage());
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
         }
     }
 
@@ -114,15 +166,16 @@ public class Presenter {
             setStat(tempList.size(), first, second);
             realm.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            mListView.setTextIntoTextView(e.getMessage());
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
         }
     }
 
 
     private void setStat(int count, Date first, Date second) {
-        mListView.setTextIntoTextView("количество = " + count + "\n");
-        mListView.appendIntoTextView("милисекунд = " + (second.getTime() - first.getTime()));
+        mListView.makeToast("количество = " + count +
+                "\n милисекунд = " + (second.getTime() - first.getTime()));
     }
 
     private void downloadOneUrl(Call<List<Model>> call) throws IOException {
@@ -132,7 +185,7 @@ public class Presenter {
             public void onResponse(Call<List<Model>> call, Response<List<Model>> response) {
                 if (response.isSuccessful()) {
                     if (response != null) {
-                        Log.e(TAG,  "response.body().size()" + response.body().size());
+                        Log.e(TAG, "response.body().size()" + response.body().size());
                         Model curModel = null;
                         mListView.appendIntoTextView("\nколичество = " + response.body().size() +
                                 "\n-----------------");
@@ -142,7 +195,7 @@ public class Presenter {
                         }
                     }
                 } else {
-                    Log.e(TAG,  "response == null");
+                    Log.e(TAG, "response == null");
                     System.out.println("onResponse error: " + response.code());
                     mListView.setTextIntoTextView("onResponse error: " + response.code());
                 }

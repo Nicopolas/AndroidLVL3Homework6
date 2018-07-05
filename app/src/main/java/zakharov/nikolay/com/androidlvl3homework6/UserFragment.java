@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,7 +23,7 @@ import retrofit2.Call;
  * Created by user on 04.07.2018.
  */
 
-public class UserFragment extends Fragment implements OnBackPressedListener, UserView{
+public class UserFragment extends Fragment implements OnBackPressedListener, UserView {
     private final String TAG = getClass().getSimpleName();
     private View v;
     private ImageView avatar;
@@ -43,7 +42,7 @@ public class UserFragment extends Fragment implements OnBackPressedListener, Use
         Log.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
 
-        if (model == null){
+        if (model == null) {
             Log.e(TAG, "Инекция модели не отработала");
             onBackPressed();
         }
@@ -64,7 +63,7 @@ public class UserFragment extends Fragment implements OnBackPressedListener, Use
         return v;
     }
 
-    public void setPresenter(UserFragmentPresenter userFragmentPresenter){
+    public void setPresenter(UserFragmentPresenter userFragmentPresenter) {
         this.mPresenter = userFragmentPresenter;
     }
 

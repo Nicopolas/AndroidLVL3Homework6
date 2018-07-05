@@ -1,7 +1,6 @@
 package zakharov.nikolay.com.androidlvl3homework6;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,30 +17,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.orm.SugarContext;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import javax.inject.Inject;
-
-import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
-import io.realm.Realm;
-import io.realm.RealmResults;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by user on 04.07.2018.
  */
 
-public class ListFragment extends Fragment implements View.OnClickListener, ListView {
+public class ListFragment extends Fragment implements ListView {
     private final String TAG = getClass().getSimpleName();
     AppComponent appComponent;
 
@@ -58,11 +41,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
     Button btnSelectAllRealm;
     Button btnDeleteAllRealm;
 
-    @Inject
-    Call<List<Model>> call;
-    Realm realm;
-
-    Endpoints restAPI;
     List<Model> modelList = new ArrayList<>();
     View v;
 
@@ -70,7 +48,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
-
     }
 
 
@@ -96,7 +73,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
     @Override
     public void onStart() {
         Log.d(TAG, "onStart() called");
-
         super.onStart();
     }
 
@@ -110,224 +86,25 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
         btnDeleteAllSugar = (Button) v.findViewById(R.id.btnDeleteAllSugar);
         btnSaveAllRealm = (Button) v.findViewById(R.id.btnSaveAllRealm);
         btnSelectAllRealm = (Button) v.findViewById(R.id.btnSelectAllRealm);
+        btnDeleteAllRealm = (Button) v.findViewById(R.id.btnDeleteAllRealm);
 
         btnLoad.setOnClickListener(v1 -> mPresenter.load());
 
+        btnSaveAllSugar.setOnClickListener(view -> mPresenter.saveAllSugar());
+        btnSelectAllSugar.setOnClickListener(view -> mPresenter.selectAllSugar());
+        btnDeleteAllSugar.setOnClickListener(view -> mPresenter.deleteAllSugar());
+
+        btnSaveAllRealm.setOnClickListener(view -> mPresenter.saveAllRealm());
+        btnSelectAllRealm.setOnClickListener(view -> mPresenter.selectAllRealm());
+        btnDeleteAllRealm.setOnClickListener(view -> mPresenter.deleteAllRealm());
+
         //RecyclerView и Adapter
-        btnDeleteAllRealm = (Button) v.findViewById(R.id.btnDeleteAllRealm);
         usersList = (RecyclerView) v.findViewById(R.id.list_recycler_view);
         adapter = new UserAdapter(modelList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         usersList.setAdapter(adapter);
         usersList.setLayoutManager(linearLayoutManager);
     }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnSaveAllSugar:
-                Single<Bundle> singleSaveAll = Single.create(new SingleOnSubscribe<Bundle>() {
-
-                    @Override
-                    public void subscribe(@NonNull SingleEmitter<Bundle> emitter) throws Exception {
-                        try {
-                            String curLogin = "";
-                            String curUserID = "";
-                            String curAvatarUrl = "";
-                            Date first = new Date();
-                            for (Model curItem : modelList) {
-                                curLogin = curItem.getLogin();
-                                curUserID = curItem.getUserId();
-                                curAvatarUrl = curItem.getAvatar();
-                                SugarModel sugarModel = new SugarModel(curLogin, curUserID, curAvatarUrl);
-                                sugarModel.save();
-                            }
-                            Date second = new Date();
-                            List<SugarModel> tempList = SugarModel.listAll(SugarModel.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("count", tempList.size());
-                            bundle.putLong("msek", second.getTime() - first.getTime());
-                            emitter.onSuccess(bundle);
-                        } catch (Exception e) {
-                            emitter.onError(e);
-                        }
-                    }
-                })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
-
-                singleSaveAll.subscribeWith(CreateObserver());
-                break;
-            case R.id.btnSelectAllSugar:
-                Single<Bundle> singleSelectAll = Single.create(new SingleOnSubscribe<Bundle>() {
-
-                    @Override
-                    public void subscribe(@NonNull SingleEmitter<Bundle> emitter) throws Exception {
-                        try {
-                            Date first = new Date();
-                            List<SugarModel> tempList = SugarModel.listAll(SugarModel.class);
-                            Date second = new Date();
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("count", tempList.size());
-                            bundle.putLong("msek", second.getTime() - first.getTime());
-                            emitter.onSuccess(bundle);
-                        } catch (Exception e) {
-                            emitter.onError(e);
-                        }
-                    }
-                }).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
-                singleSelectAll.subscribeWith(CreateObserver());
-                break;
-            case R.id.btnDeleteAllSugar:
-                Single<Bundle> singleDeleteAll = Single.create(new SingleOnSubscribe<Bundle>() {
-
-                    @Override
-                    public void subscribe(@NonNull SingleEmitter<Bundle> emitter) throws Exception {
-                        try {
-                            Date first = new Date();
-                            int count = SugarModel.deleteAll(SugarModel.class);
-                            Date second = new Date();
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("count", count);
-                            bundle.putLong("msek", second.getTime() - first.getTime());
-                            emitter.onSuccess(bundle);
-                        } catch (Exception e) {
-                            emitter.onError(e);
-                        }
-                    }
-                }).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
-                singleDeleteAll.subscribeWith(CreateObserver());
-                break;
-
-            case R.id.btnSaveAllRealm:
-                Single<Bundle> singleSaveAllRealm = Single.create(new SingleOnSubscribe<Bundle>() {
-
-                    @Override
-                    public void subscribe(@NonNull SingleEmitter<Bundle> emitter) throws Exception {
-                        try {
-                            String curLogin = "";
-                            String curUserID = "";
-                            String curAvatarUrl = "";
-                            realm = Realm.getDefaultInstance();
-                            Date first = new Date();
-
-                            for (Model curItem : modelList) {
-                                curLogin = curItem.getLogin();
-                                curUserID = curItem.getUserId();
-                                curAvatarUrl = curItem.getAvatar();
-                                try {
-                                    realm.beginTransaction();
-                                    RealmModel realmModel = realm.createObject(RealmModel.class);
-                                    realmModel.setUserID(curUserID);
-                                    realmModel.setLogin(curLogin);
-                                    realmModel.setAvatarUrl(curAvatarUrl);
-                                    realm.commitTransaction();
-                                } catch (Exception e) {
-                                    realm.cancelTransaction();
-                                    emitter.onError(e);
-                                }
-                            }
-                            Date second = new Date();
-                            long count = realm.where(RealmModel.class).count();
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("count", (int) count);
-                            bundle.putLong("msek", second.getTime() - first.getTime());
-                            emitter.onSuccess(bundle);
-                            realm.close();
-                        } catch (Exception e) {
-                            emitter.onError(e);
-                        }
-                    }
-                }).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
-                singleSaveAllRealm.subscribeWith(CreateObserver());
-                break;
-            case R.id.btnSelectAllRealm:
-                Single<Bundle> singleSelectAllRealm = Single.create(new SingleOnSubscribe<Bundle>() {
-
-                    @Override
-                    public void subscribe(@NonNull SingleEmitter<Bundle> emitter) throws Exception {
-                        try {
-                            realm = Realm.getDefaultInstance();
-                            Date first = new Date();
-                            RealmResults<RealmModel> tempList = realm.where(RealmModel.class).findAll();
-                            Date second = new Date();
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("count", tempList.size());
-                            bundle.putLong("msek", second.getTime() - first.getTime());
-                            emitter.onSuccess(bundle);
-                            realm.close();
-                        } catch (Exception e) {
-                            emitter.onError(e);
-                        }
-                    }
-                }).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
-                singleSelectAllRealm.subscribeWith(CreateObserver());
-                break;
-            case R.id.btnDeleteAllRealm:
-                Single<Bundle> singleDeleteAllRealm = Single.create(new SingleOnSubscribe<Bundle>() {
-
-                    @Override
-                    public void subscribe(@NonNull SingleEmitter<Bundle> emitter) throws Exception {
-                        try {
-                            realm = Realm.getDefaultInstance();
-                            final RealmResults<RealmModel> tempList = realm.where(RealmModel.class).findAll();
-                            Date first = new Date();
-                            realm.executeTransaction(new Realm.Transaction() {
-                                @Override
-                                public void execute(Realm realm) {
-                                    tempList.deleteAllFromRealm();
-                                }
-                            });
-                            Date second = new Date();
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("count", tempList.size());
-                            bundle.putLong("msek", second.getTime() - first.getTime());
-                            emitter.onSuccess(bundle);
-                            realm.close();
-                        } catch (Exception e) {
-                            emitter.onError(e);
-                        }
-                    }
-                }).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
-                singleDeleteAllRealm.subscribeWith(CreateObserver());
-                break;
-        }
-    }
-
-    private DisposableSingleObserver<Bundle> CreateObserver() {
-        return new DisposableSingleObserver<Bundle>() {
-
-            @Override
-            protected void onStart() {
-                super.onStart();
-                progressBar.setVisibility(View.VISIBLE);
-                mInfoTextView.setText("");
-            }
-
-            @Override
-            public void onSuccess(@NonNull Bundle bundle) {
-                progressBar.setVisibility(View.GONE);
-                usersList.setVisibility(View.GONE);
-                mInfoTextView.setVisibility(View.VISIBLE);
-                mInfoTextView.append("количество = " + bundle.getInt("count") +
-                        "\n милисекунд = " + bundle.getLong("msek"));
-            }
-
-            @Override
-            public void onError(@NonNull Throwable e) {
-                progressBar.setVisibility(View.GONE);
-                usersList.setVisibility(View.GONE);
-                mInfoTextView.setVisibility(View.VISIBLE);
-                mInfoTextView.setText("ошибка БД: " + e.getMessage());
-            }
-        };
-    }
-
 
     class UserAdapter extends RecyclerView.Adapter<UserHolder> {
         List<Model> models;
