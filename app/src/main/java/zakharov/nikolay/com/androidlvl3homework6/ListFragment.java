@@ -100,51 +100,14 @@ public class ListFragment extends Fragment implements ListView {
 
         //RecyclerView и Adapter
         usersList = (RecyclerView) v.findViewById(R.id.list_recycler_view);
-        adapter = new UserAdapter(modelList);
+        adapter = new UserAdapter(this, modelList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         usersList.setAdapter(adapter);
         usersList.setLayoutManager(linearLayoutManager);
     }
 
-    class UserAdapter extends RecyclerView.Adapter<UserHolder> {
-        List<Model> models;
-
-        public UserAdapter(List<Model> dictionaries) {
-            this.models = dictionaries;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public UserHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View listItemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_list_item, parent, false);
-
-            return new UserHolder(listItemView);
-        }
-
-        @Override
-        public void onBindViewHolder(final UserHolder holder, int position) {
-            final Model model = models.get(holder.getAdapterPosition());
-            setImage(holder.avatar, model.getAvatar());
-            holder.usersName.setText(model.getLogin());
-            holder.avatar.setOnClickListener(view -> {
-                startUserFragment(model);
-            });
-            holder.usersName.setOnClickListener(view -> {
-                startUserFragment(model);
-            });
-        }
-
-
-        @Override
-        public int getItemCount() {
-            if (models != null && models.size() != 0) {
-                return models.size();
-            }
-            return 0;
-        }
-    }
-
-    private void startUserFragment(Model model) {
+    @Override
+    public void startUserFragment(Model model) {
         ModelComponent modelComponent = DaggerModelComponent.builder()
                 .daggerModelModule(new DaggerModelModule(getActivity(), model))
                 .build();
@@ -157,18 +120,8 @@ public class ListFragment extends Fragment implements ListView {
         ((MainActivity) getActivity()).startFragment(fragment);
     }
 
-    static class UserHolder extends RecyclerView.ViewHolder {
-        ImageView avatar;
-        TextView usersName;
-
-        public UserHolder(View itemView) {
-            super(itemView);
-            avatar = (ImageView) itemView.findViewById(R.id.avatar_list_item);
-            usersName = (TextView) itemView.findViewById(R.id.user_name_list_item);
-        }
-    }
-
-    private void setImage(ImageView image, String imageUrl) {
+    @Override
+    public void setImage(ImageView image, String imageUrl) {
         Glide.with(this)
                 .load(imageUrl)
                 .into(image);

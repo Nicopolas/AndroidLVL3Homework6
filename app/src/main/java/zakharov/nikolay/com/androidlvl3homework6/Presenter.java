@@ -179,6 +179,13 @@ public class Presenter {
     }
 
     private void downloadOneUrl(Call<List<Model>> call) throws IOException {
+        if(call.isExecuted()){
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(true);
+            mListView.initGUI();
+            return;
+        }
+
         call.enqueue(new Callback<List<Model>>() {
 
             @Override

@@ -1,5 +1,7 @@
 package zakharov.nikolay.com.androidlvl3homework6;
 
+import android.widget.ImageView;
+
 import java.util.List;
 
 /**
@@ -14,4 +16,6 @@ public interface ListView {
     void makeToast(String string);
     void initGUI();
     List<Model> getModelList();
+    void setImage(ImageView image, String imageUrl);
+    void startUserFragment(Model model);
 }
