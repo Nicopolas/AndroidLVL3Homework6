@@ -83,6 +83,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
         appComponent.injectsToPresenter(mPresenter);
         initGUI();
         SugarContext.init(getActivity());
+        mPresenter.load();
         return v;
     }
 
@@ -368,11 +369,14 @@ public class ListFragment extends Fragment implements View.OnClickListener, List
 
     private void startUserFragment(Model model) {
         ModelComponent modelComponent = DaggerModelComponent.builder()
-                .daggerModelModule(new DaggerModelModule(model))
+                .daggerModelModule(new DaggerModelModule(getActivity(), model))
                 .build();
 
         UserFragment fragment = new UserFragment();
+        UserFragmentPresenter userFragmentPresenter = new UserFragmentPresenter(fragment);
+        fragment.setPresenter(userFragmentPresenter);
         modelComponent.injectsUserFragment(fragment);
+        modelComponent.injectsToUserFragmentPresenter(userFragmentPresenter);
         ((MainActivity) getActivity()).startFragment(fragment);
     }
 

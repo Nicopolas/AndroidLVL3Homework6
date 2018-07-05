@@ -2,8 +2,6 @@ package zakharov.nikolay.com.androidlvl3homework6;
 
 import java.util.List;
 
-import retrofit2.Call;
-
 /**
  * Created by user on 04.07.2018.
  */

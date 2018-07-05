@@ -5,4 +5,5 @@ import dagger.Component;
 @Component(modules = {DaggerModelModule.class})
 public interface ModelComponent {
     void injectsUserFragment(UserFragment userFragment);
+    void injectsToUserFragmentPresenter(UserFragmentPresenter userFragmentPresenter);
 }
