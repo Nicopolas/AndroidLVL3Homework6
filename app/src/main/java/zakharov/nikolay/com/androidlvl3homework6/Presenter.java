@@ -178,8 +178,8 @@ public class Presenter {
                 "\n милисекунд = " + (second.getTime() - first.getTime()));
     }
 
-    private void downloadOneUrl(Call<List<Model>> call) throws IOException {
-        if(call.isExecuted()){
+    public void downloadOneUrl(Call<List<Model>> call) throws IOException {
+        if (call.isExecuted()) {
             mListView.setVisibilityProgressBar(false);
             mListView.setVisibilityUsersList(true);
             mListView.initGUI();
@@ -203,7 +203,6 @@ public class Presenter {
                     }
                 } else {
                     Log.e(TAG, "response == null");
-                    System.out.println("onResponse error: " + response.code());
                     mListView.setTextIntoTextView("onResponse error: " + response.code());
                 }
                 mListView.setVisibilityProgressBar(false);
@@ -213,7 +212,6 @@ public class Presenter {
 
             @Override
             public void onFailure(Call<List<Model>> call, Throwable t) {
-                System.out.println("onFailure " + t);
                 mListView.setTextIntoTextView("onFailure " + t.getMessage());
                 mListView.setVisibilityProgressBar(false);
             }
