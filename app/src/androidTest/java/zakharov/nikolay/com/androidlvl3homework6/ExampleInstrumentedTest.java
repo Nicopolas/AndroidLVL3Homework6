@@ -41,14 +41,14 @@ public class ExampleInstrumentedTest {
         Presenter presenter = new Presenter(listFragment);
         appComponent.injectsToPresenter(presenter);
         try {
-            presenter.downloadOneUrl(null);
+            presenter.readResponse(presenter.response);
         } catch (IOException e) {
             e.printStackTrace();
         }
         Mockito.verifyNoMoreInteractions(listFragment);
         presenter.load();
         try {
-            Mockito.verify(presenter).downloadOneUrl(presenter.call);
+            Mockito.verify(presenter).readResponse();
         } catch (IOException e) {
             e.printStackTrace();
         }

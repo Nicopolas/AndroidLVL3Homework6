@@ -23,6 +23,10 @@ public class DaggerNetModule {
         this.context = context;
     }
 
+    public DaggerNetModule() {
+
+    }
+
     @Provides
     Retrofit getRetrofit(){
         return new Retrofit.Builder()

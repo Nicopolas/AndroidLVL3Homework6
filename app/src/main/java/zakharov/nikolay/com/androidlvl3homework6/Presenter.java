@@ -25,6 +25,8 @@ public class Presenter {
     Call<List<Model>> call;
     @Inject
     boolean networkInfo;
+    Response<List<Model>> response = null;
+    int code;
 
     ListView mListView;
     List<Model> modelList;
@@ -42,7 +44,8 @@ public class Presenter {
             // запускаем
             try {
                 mListView.setVisibilityProgressBar(true);
-                downloadOneUrl(call);
+                downloadResponse();
+                readResponse(response);
             } catch (IOException e) {
                 e.printStackTrace();
                 mListView.setTextIntoTextView(e.getMessage());
@@ -178,43 +181,65 @@ public class Presenter {
                 "\n милисекунд = " + (second.getTime() - first.getTime()));
     }
 
-    public void downloadOneUrl(Call<List<Model>> call) throws IOException {
+    public void readResponse(Response<List<Model>> response) throws IOException {
         if (call.isExecuted()) {
             mListView.setVisibilityProgressBar(false);
             mListView.setVisibilityUsersList(true);
             mListView.initGUI();
             return;
         }
+        downloadResponse();
+        if (response.isSuccessful()) {
+            if (response != null) {
+                Log.e(TAG, "response.body().size()" + response.body().size());
+                Model curModel = null;
+                mListView.appendIntoTextView("\nколичество = " + response.body().size() +
+                        "\n-----------------");
+                for (int i = 0; i < response.body().size(); i++) {
+                    curModel = response.body().get(i);
+                    modelList.add(curModel);
+                }
+            }
+        } else {
+            Log.e(TAG, "response == null");
+            mListView.setTextIntoTextView("onResponse error: " + response.code());
+        }
+        mListView.setVisibilityProgressBar(false);
+        mListView.setVisibilityUsersList(true);
+        mListView.initGUI();
+    }
+
+    public void downloadResponse() {
+        if (call.isExecuted()) {
+            setResponse(null);
+        }
 
         call.enqueue(new Callback<List<Model>>() {
-
             @Override
             public void onResponse(Call<List<Model>> call, Response<List<Model>> response) {
                 if (response.isSuccessful()) {
                     if (response != null) {
-                        Log.e(TAG, "response.body().size()" + response.body().size());
-                        Model curModel = null;
-                        mListView.appendIntoTextView("\nколичество = " + response.body().size() +
-                                "\n-----------------");
-                        for (int i = 0; i < response.body().size(); i++) {
-                            curModel = response.body().get(i);
-                            modelList.add(curModel);
-                        }
+                        setResponse(response);
+                        setCode(response.code());
                     }
                 } else {
-                    Log.e(TAG, "response == null");
-                    mListView.setTextIntoTextView("onResponse error: " + response.code());
+                    setCode(response.code());
                 }
-                mListView.setVisibilityProgressBar(false);
-                mListView.setVisibilityUsersList(true);
-                mListView.initGUI();
             }
 
             @Override
             public void onFailure(Call<List<Model>> call, Throwable t) {
-                mListView.setTextIntoTextView("onFailure " + t.getMessage());
-                mListView.setVisibilityProgressBar(false);
+                setResponse(null);
+                Log.e(TAG, t.getMessage());
             }
         });
+    }
+
+    public void setResponse(Response<List<Model>> response) {
+        this.response = response;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 }
