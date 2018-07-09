@@ -9,11 +9,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -35,61 +30,29 @@ public class ExampleInstrumentedTest {
 
     @Test(expected = NullPointerException.class)
     public void serviceTestWithConnection() {
-
-/*      InfoView view = Mockito.mock(InfoView.class);
-        InfoModel model = Mockito.mock(InfoModel.class);
-        Mockito.when(model.lifecycle()).thenReturn(Observable.empty());
-        InfoPresenter presenter = new InfoPresenterImpl(model);
-        presenter.attachView(view);
-        Mockito.verifyZeroInteractions(view);*/
-
-
         Context appContext = InstrumentationRegistry.getTargetContext();
-        ListFragment listFragment = new ListFragment();
-        DaggerNetModule daggerNetModule = new DaggerNetModule(appContext);
-        Presenter presenter = new Presenter(listFragment);
-        checkCallNull(presenter);
-        checkCallStatusCode(presenter, daggerNetModule.getCall(daggerNetModule.getRetrofit()), listFragment);
-    }
+        ListFragment listFragment = mock(ListFragment.class);
+        //ListView listView = mock(ListView.class);
+        //Model model = mock(Model.class);
 
-    private void checkCallNull(Presenter presenter) {
+        AppComponent appComponent = DaggerAppComponent.builder()
+                .daggerNetModule(new DaggerNetModule(appContext))
+                .build();
+        Presenter presenter = new Presenter(listFragment);
+        appComponent.injectsToPresenter(presenter);
         try {
             presenter.downloadOneUrl(null);
-        } catch (NullPointerException e) {
-            return;
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void checkCallStatusCode(Presenter presenter, Call call, ListView listView) {
-            presenter.networkInfo = true;
-            try {
-                presenter.downloadOneUrl(call);
-                thrown.expect(IllegalStateException.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        while (call.isExecuted()) {
-            call.enqueue(new Callback<List<Model>>() {
-                @Override
-                public void onResponse(Call<List<Model>> call, Response<List<Model>> response) {
-                    if (response.code() != 200) {
-                        Mockito.verify(listView).setTextIntoTextView("onResponse error: " + response.code());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<List<Model>> call, Throwable t) {
-                    Mockito.verify(listView).setTextIntoTextView("onFailure " + t.getMessage());
-                }
-            });
+        Mockito.verifyNoMoreInteractions(listFragment);
+        presenter.load();
+        try {
+            Mockito.verify(presenter).downloadOneUrl(presenter.call);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
-
-    @Test
-    public void serviceTestWithoutConnecting() {
-        Comparable c = mock(Comparable.class);
+        Mockito.verify(listFragment).appendIntoTextView("\nколичество = " + 30 +
+                "\n-----------------");
     }
 }
