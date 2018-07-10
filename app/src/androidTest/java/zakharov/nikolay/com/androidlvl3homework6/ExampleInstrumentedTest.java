@@ -6,12 +6,8 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -26,33 +22,5 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("zakharov.nikolay.com.androidlvl3homework6", appContext.getPackageName());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void serviceTestWithConnection() {
-        Context appContext = InstrumentationRegistry.getTargetContext();
-        ListFragment listFragment = mock(ListFragment.class);
-        //ListView listView = mock(ListView.class);
-        //Model model = mock(Model.class);
-
-        AppComponent appComponent = DaggerAppComponent.builder()
-                .daggerNetModule(new DaggerNetModule(appContext))
-                .build();
-        Presenter presenter = new Presenter(listFragment);
-        appComponent.injectsToPresenter(presenter);
-        try {
-            presenter.downloadOneUrl(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Mockito.verifyNoMoreInteractions(listFragment);
-        presenter.load();
-        try {
-            Mockito.verify(presenter).downloadOneUrl(presenter.call);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Mockito.verify(listFragment).appendIntoTextView("\nколичество = " + 30 +
-                "\n-----------------");
     }
 }
