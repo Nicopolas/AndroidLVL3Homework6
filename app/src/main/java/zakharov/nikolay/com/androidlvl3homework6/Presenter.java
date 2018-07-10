@@ -3,7 +3,6 @@ package zakharov.nikolay.com.androidlvl3homework6;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,8 +13,6 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by 1 on 01.07.2018.
@@ -55,6 +52,56 @@ public class Presenter {
         }
     }
 
+    // -------------------------------------------------------------- Sugar
+    public void saveAllSugar() {
+        try {
+            String curLogin = "";
+            String curUserID = "";
+            String curAvatarUrl = "";
+            Date first = new Date();
+            for (Model curItem : modelList) {
+                curLogin = curItem.getLogin();
+                curUserID = curItem.getUserId();
+                curAvatarUrl = curItem.getAvatar();
+                SugarModel sugarModel = new SugarModel(curLogin, curUserID, curAvatarUrl);
+                sugarModel.save();
+            }
+            Date second = new Date();
+            List<SugarModel> tempList = SugarModel.listAll(SugarModel.class);
+            setStat(tempList.size(), first, second);
+        } catch (Exception e) {
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
+        }
+    }
+
+    public void selectAllSugar() {
+        try {
+            Date first = new Date();
+            List<SugarModel> tempList = SugarModel.listAll(SugarModel.class);
+            Date second = new Date();
+            setStat(tempList.size(), first, second);
+        } catch (Exception e) {
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
+        }
+    }
+
+    public void deleteAllSugar() {
+        try {
+            Date first = new Date();
+            int count = SugarModel.deleteAll(SugarModel.class);
+            Date second = new Date();
+            setStat(count, first, second);
+        } catch (Exception e) {
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
+        }
+    }
+
 
     // -------------------------------------------------------------- Realm
 
@@ -88,8 +135,9 @@ public class Presenter {
             setStat((int) count, first, second);
             realm.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            mListView.setTextIntoTextView(e.getMessage());
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
         }
     }
 
@@ -102,8 +150,9 @@ public class Presenter {
             setStat(tempList.size(), first, second);
             realm.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            mListView.setTextIntoTextView(e.getMessage());
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
         }
     }
 
@@ -117,25 +166,33 @@ public class Presenter {
             setStat(tempList.size(), first, second);
             realm.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            mListView.setTextIntoTextView(e.getMessage());
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(false);
+            mListView.setTextIntoTextView("ошибка БД: " + e.getMessage());
         }
     }
 
 
     private void setStat(int count, Date first, Date second) {
-        mListView.setTextIntoTextView("количество = " + count + "\n");
-        mListView.appendIntoTextView("милисекунд = " + (second.getTime() - first.getTime()));
+        mListView.makeToast("количество = " + count +
+                "\n милисекунд = " + (second.getTime() - first.getTime()));
     }
 
-    private void downloadOneUrl(Call<List<Model>> call) throws IOException {
+    public void downloadOneUrl(Call<List<Model>> call) throws IOException {
+        if (call.isExecuted()) {
+            mListView.setVisibilityProgressBar(false);
+            mListView.setVisibilityUsersList(true);
+            mListView.initGUI();
+            return;
+        }
+
         call.enqueue(new Callback<List<Model>>() {
 
             @Override
             public void onResponse(Call<List<Model>> call, Response<List<Model>> response) {
                 if (response.isSuccessful()) {
                     if (response != null) {
-                        Log.e(TAG,  "response.body().size()" + response.body().size());
+                        Log.e(TAG, "response.body().size()" + response.body().size());
                         Model curModel = null;
                         mListView.appendIntoTextView("\nколичество = " + response.body().size() +
                                 "\n-----------------");
@@ -145,8 +202,7 @@ public class Presenter {
                         }
                     }
                 } else {
-                    Log.e(TAG,  "response == null");
-                    System.out.println("onResponse error: " + response.code());
+                    Log.e(TAG, "response == null");
                     mListView.setTextIntoTextView("onResponse error: " + response.code());
                 }
                 mListView.setVisibilityProgressBar(false);
@@ -156,7 +212,6 @@ public class Presenter {
 
             @Override
             public void onFailure(Call<List<Model>> call, Throwable t) {
-                System.out.println("onFailure " + t);
                 mListView.setTextIntoTextView("onFailure " + t.getMessage());
                 mListView.setVisibilityProgressBar(false);
             }

@@ -1,8 +1,8 @@
 package zakharov.nikolay.com.androidlvl3homework6;
 
-import java.util.List;
+import android.widget.ImageView;
 
-import retrofit2.Call;
+import java.util.List;
 
 /**
  * Created by user on 04.07.2018.
@@ -16,4 +16,6 @@ public interface ListView {
     void makeToast(String string);
     void initGUI();
     List<Model> getModelList();
+    void setImage(ImageView image, String imageUrl);
+    void startUserFragment(Model model);
 }
