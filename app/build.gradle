@@ -21,6 +21,32 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    def keystorePropertiesFile = file('keyStore.properties')
+    def isKeystoreExists = false
+    if(keystorePropertiesFile.exists()) {
+        def keystoreProperties = new Properties()
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+        def keystoreFile = file(keystoreProperties['storeFile'])
+        if(keystoreFile.exists()) {
+            isKeystoreExists = true
+            def keystorePassword = keystoreProperties['storePassword']
+            signingConfigs {
+                release {
+                    keyAlias keystoreProperties['release.keyAlias']
+                    keyPassword keystoreProperties['release.keyPassword']
+                    storeFile keystoreFile
+                    storePassword keystorePassword
+                }
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+    }
 }
 
 dependencies {
