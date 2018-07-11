@@ -1,5 +1,5 @@
 
-Проложение написано в качетсве домашнего задания, курса обучения на сайте[GeekBrains] (https://geekbrains.ru/lessons/24182/homework)
+Приложение написано в качестве домашнего задания, курса обучения на сайте[GeekBrains] (https://geekbrains.ru/lessons/24182/homework)
 
 ## To do list
 ### Планируется добавить в проект
