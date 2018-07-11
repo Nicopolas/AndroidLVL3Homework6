@@ -1,7 +1,7 @@
 # Changelog
 Все важные изменения в этом проекте будут задокументированы в этом файле.
 
-[Репозитерий ](https://github.com/Nicopolas/AndroidLVL3Homework6/) проекта находится в открытом доступе.
+[Репозиторий](https://github.com/Nicopolas/AndroidLVL3Homework6/) проекта находится в открытом доступе.
 
 ## Дорелизная версия
 
