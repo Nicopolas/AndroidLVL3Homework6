@@ -1,5 +1,5 @@
 
-Приложение написано в качестве домашнего задания, курса обучения на сайте [GeekBrains] (https://geekbrains.ru/lessons/24182/homework/)
+Приложение написано в качестве домашнего задания, курса обучения на сайте [GeekBrains](https://geekbrains.ru/lessons/24182/homework/)
 
 ## To do list
 ### Планируется добавить в проект
@@ -11,11 +11,11 @@
 ## Development
 ### Dependencies
 
-- [stetho] (https://mvnrepository.com/artifact/com.facebook.stetho/stetho/)
-- [stetho-okhttp] (https://mvnrepository.com/artifact/com.facebook.stetho/stetho-okhttp3/)
-- [stetho-urlconnection] (https://mvnrepository.com/artifact/com.facebook.stetho/stetho-urlconnection/)
-- [dagger] (https://mvnrepository.com/artifact/com.google.dagger/dagger/)
-- [rxjava2] (https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxandroid/)
+- [stetho](https://mvnrepository.com/artifact/com.facebook.stetho/stetho/)
+- [stetho-okhttp](https://mvnrepository.com/artifact/com.facebook.stetho/stetho-okhttp3/)
+- [stetho-urlconnection](https://mvnrepository.com/artifact/com.facebook.stetho/stetho-urlconnection/)
+- [dagger](https://mvnrepository.com/artifact/com.google.dagger/dagger/)
+- [rxjava2](https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxandroid/)
 
 ### Installation
 
